@@ -31,7 +31,6 @@ class MyApp : Application() {
 
 val appModule = module {
     single { BookRepository(get()) }
-    single { BookRepository(get()) }
     viewModel { BookListViewModel(get()) }
 }
 

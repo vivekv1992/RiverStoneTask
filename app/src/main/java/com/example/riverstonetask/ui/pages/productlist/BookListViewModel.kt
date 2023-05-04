@@ -1,5 +1,6 @@
 package com.example.riverstonetask.ui.pages.productlist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.riverstonetask.model.Product
@@ -14,9 +15,10 @@ class BookListViewModel(private val repository: BookRepository) : ViewModel() {
     private val _myStateFlow = MutableStateFlow<Resource<List<Product>>>(Resource.Loading())
     val myStateFlow: StateFlow<Resource<List<Product>>> = _myStateFlow
     init {
+        Log.d("BookListViewModel", "onInit")
         fetchData()
     }
-    fun fetchData() {
+    private fun fetchData() {
         _myStateFlow.value = Resource.Loading()
         viewModelScope.launch {
             when (val response = repository.getProduct()) {
@@ -28,5 +30,13 @@ class BookListViewModel(private val repository: BookRepository) : ViewModel() {
                 }
             }
         }
+    }
+    fun getProductbyId(productId: Int): Product? {
+        if (myStateFlow.value is Resource.Success) {
+            return (myStateFlow.value as Resource.Success<List<Product>>).data.find {
+                it.id == productId;
+            }
+        }
+        return null
     }
 }

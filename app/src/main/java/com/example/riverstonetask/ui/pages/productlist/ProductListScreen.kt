@@ -34,8 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ProductListScreen(navController: NavController) {
-    val bookListViewModel = koinViewModel<BookListViewModel>()
+fun ProductListScreen(navController: NavController, bookListViewModel : BookListViewModel) {
     val products by bookListViewModel.myStateFlow.collectAsStateWithLifecycle()
     val state: Resource<List<Product>> = products
     if (state is Resource.Loading) {
@@ -43,7 +42,7 @@ fun ProductListScreen(navController: NavController) {
             CircularProgressIndicator(color = Color.Blue)
         }
     } else if (state is Resource.Failure) {
-        Text(text = "Hello World")
+        Text(text = state.message)
     } else if (state is Resource.Success) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = state.data) { item ->
@@ -53,11 +52,7 @@ fun ProductListScreen(navController: NavController) {
                         .padding(16.dp)
                         .fillMaxWidth()
                         .clickable {
-                            val bundle = Bundle().apply {
-                                putString("arg1", "argument 1")
-                                putInt("arg2", 123)
-                            }
-                            navController.navigate("product_details")
+                            navController.navigate("product_details?product=${item.id}")
                         }) {
                     Column {
                         ThumbnailImage(item.thumbnail)
@@ -81,7 +76,6 @@ fun ProductListScreen(navController: NavController) {
                         )
                     }
                 }
-                card
             }
         }
 

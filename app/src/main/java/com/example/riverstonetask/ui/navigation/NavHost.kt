@@ -4,25 +4,29 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.riverstonetask.model.Product
+import androidx.navigation.navArgument
 import com.example.riverstonetask.ui.pages.ProductDetailsScreen
+import com.example.riverstonetask.ui.pages.productlist.BookListViewModel
 import com.example.riverstonetask.ui.pages.productlist.ProductListScreen
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MyNavHost(
     navController: NavHostController) {
+    val bookListViewModel = koinViewModel<BookListViewModel>()
+
     NavHost(
         navController = navController,
         startDestination = "product_list") {
+
         composable("product_list") {
-            ProductListScreen(navController)
+            ProductListScreen(navController, bookListViewModel)
         }
-        composable("product_details") {
-            val product = it.arguments?.getParcelable<Product>("product_data")
-            println("MyNavHost.product_details ")
-            product?.let {
-                println("MyNavHost.product_details 11 $product")
-                ProductDetailsScreen(it)
+        composable("product_details?product={productId}",
+            arguments = listOf(navArgument("productId") { defaultValue = 1 })) {
+            val productId = it.arguments?.getInt("productId")
+            productId?.let {
+                ProductDetailsScreen(productId, bookListViewModel)
             }
         }
     }
